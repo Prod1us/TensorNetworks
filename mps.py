@@ -1,8 +1,11 @@
 import numpy as np
 
+from numpy.typing import NDArray
+compl_arr_t = NDArray[np.complex128]
+
 
 class MixedCanonical:
-    def __init__(self, j, left_part, right_part, ortho_center):
+    def __init__(self, j: int, left_part: list[compl_arr_t], right_part: list[compl_arr_t], ortho_center: compl_arr_t):
         self.left_part = left_part  # left-canonical matrices
         self.right_part = right_part  # right-canonical matrices
         self.ortho_center = ortho_center  # orthogonality center at site j
@@ -21,7 +24,7 @@ class MixedCanonical:
 
 
 # function returns mixed canonical MPS at site j of provided state
-def decompose(state: np.array, j: int, truncate=False, trunc_bond_d=0) -> MixedCanonical:
+def decompose(state: compl_arr_t, j: int, truncate=False, trunc_bond_d=0) -> MixedCanonical:
     tensor_rank = int(np.log2(state.size))
 
     if tensor_rank - j < 1:
@@ -83,16 +86,18 @@ def decompose(state: np.array, j: int, truncate=False, trunc_bond_d=0) -> MixedC
 
 
 # function returns expectation value of provided operator at site j
-def local_1site_expectation_value(state: np.array, j: int, operator: np.array) -> float:
+def local_1site_expectation_value(state: compl_arr_t, j: int, operator: compl_arr_t) -> float:
     ortho_center = decompose(state, j).ortho_center
 
+    # from orthogonality center and its conjugate we create one 2-leg tensor
     contraction = np.tensordot(np.conj(ortho_center), ortho_center, axes=((0, 2), (0, 2)))
+    # performing contraction of operator and this tensor
     contraction = np.tensordot(contraction, operator, axes=((0, 1), (0, 1)))
     return np.real(contraction)
 
 
 # function returns expectation value of provided operator at site j and j+1
-def local_2site_expectation_value(state: np.array, j: int, operator: np.array) -> float:
+def local_2site_expectation_value(state: compl_arr_t, j: int, operator: compl_arr_t) -> float:
     MPS = decompose(state, j)
 
     if MPS.is_left_canonical():
@@ -101,6 +106,8 @@ def local_2site_expectation_value(state: np.array, j: int, operator: np.array) -
     ortho_center = MPS.ortho_center
     next_tensor = MPS.right_part[0]
 
+    # from mps tensors and its conjugate we create "tensor ring"
+    # with 4 legs around operator tensor and then perform contraction
     left_part = np.tensordot(ortho_center, np.conj(ortho_center), axes=((0,), (0,)))
     right_part = np.tensordot(next_tensor, np.conj(next_tensor), axes=((2,), (2,)))
     ring = np.tensordot(left_part, right_part, axes=((1, 3), (0, 2)))

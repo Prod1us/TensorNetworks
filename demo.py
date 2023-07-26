@@ -11,9 +11,11 @@ def random(n):
     return x
 
 
-def main():
+if __name__ == "__main__":
     pauliZ = np.array([[1., 0.], [0., -1.]])
     pauliZZ = np.tensordot(pauliZ, pauliZ, axes=0)
+
+    # TODO check truncation
 
     psi = random(10)
     j = 4
@@ -22,7 +24,3 @@ def main():
 
     print("Expectation value of kronecker product of two pauli Z operators in random state psi at j and j + 1 site: " +
           str(mps.local_2site_expectation_value(psi, j, pauliZZ)))
-
-
-if __name__ == "__main__":
-    main()
