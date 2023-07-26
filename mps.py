@@ -80,3 +80,30 @@ def decompose(state: np.array, j: int, truncate=False, trunc_bond_d=0) -> MixedC
     MPS = MixedCanonical(j, left_mps_list, right_mps_list, state)
 
     return MPS
+
+
+# function returns expectation value of provided operator at site j
+def local_1site_expectation_value(state: np.array, j: int, operator: np.array) -> float:
+    ortho_center = decompose(state, j).ortho_center
+
+    contraction = np.tensordot(np.conj(ortho_center), ortho_center, axes=((0, 2), (0, 2)))
+    contraction = np.tensordot(contraction, operator, axes=((0, 1), (0, 1)))
+    return np.real(contraction)
+
+
+# function returns expectation value of provided operator at site j and j+1
+def local_2site_expectation_value(state: np.array, j: int, operator: np.array) -> float:
+    MPS = decompose(state, j)
+
+    if MPS.is_left_canonical():
+        raise Exception("j is a last element of the MPS")
+
+    ortho_center = MPS.ortho_center
+    next_tensor = MPS.right_part[0]
+
+    left_part = np.tensordot(ortho_center, np.conj(ortho_center), axes=((0,), (0,)))
+    right_part = np.tensordot(next_tensor, np.conj(next_tensor), axes=((2,), (2,)))
+    ring = np.tensordot(left_part, right_part, axes=((1, 3), (0, 2)))
+    ring = ring.transpose((0, 2, 1, 3))
+
+    return np.real(np.tensordot(operator, ring, axes=((0, 1, 2, 3), (0, 1, 2, 3))))
