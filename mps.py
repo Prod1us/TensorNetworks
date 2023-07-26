@@ -1,13 +1,32 @@
 import numpy as np
 
 
+class MixedCanonical:
+    def __init__(self, j, left_part, right_part, ortho_center):
+        self.left_part = left_part  # left-canonical matrices
+        self.right_part = right_part  # right-canonical matrices
+        self.ortho_center = ortho_center  # orthogonality center at site j
+        self.j = j
+
+        self.rank = left_part.size + right_part.size + 1
+
+    def is_left_canonical(self):
+        return self.j == self.rank - 1
+
+    def is_right_canonical(self):
+        return self.j == 0
+
+    def norm(self):
+        return np.tensordot(self.ortho_center, np.conj(self.ortho_center), axes=((0, 1, 2), (0, 1, 2)))
+
+
 # function returns mixed canonical MPS at site j of provided state
-def mixed_canonical(state: np.array, j: int, truncate=False, trunc_bond_d=0):
+def decompose(state: np.array, j: int, truncate=False, trunc_bond_d=0) -> MixedCanonical:
     tensor_rank = int(np.log2(state.size))
 
     if tensor_rank - j < 1:
         print("Error: Orthogonality center index is out of bounds")
-        return
+        return None
 
     # we extend shape of our tensor for easier calculations (we add two 1d legs, one on the left and one on the right)
     extension = np.ones(1)
@@ -20,7 +39,6 @@ def mixed_canonical(state: np.array, j: int, truncate=False, trunc_bond_d=0):
     # svd decomposition with integrated bond dimension truncation
     def SVD(state0):
         u, s, vh = np.linalg.svd(state0, full_matrices=False)
-
         d = s.size
 
         # bond dimension truncation
@@ -60,6 +78,6 @@ def mixed_canonical(state: np.array, j: int, truncate=False, trunc_bond_d=0):
 
         right_mps_list.insert(0, vh)
 
-    return left_mps_list, [state], right_mps_list
+    MPS = MixedCanonical(j, left_mps_list, right_mps_list, state)
 
-
+    return MPS
