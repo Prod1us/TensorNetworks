@@ -1,6 +1,6 @@
 #Tensor Networks
 
-Implementations of tensor networks algorithms in python.
+Implementations of 1D tensor networks algorithms in python.
 
 ## MPS decomposition 
 Basic tensor network algorithm that decomposes an n-rank tensor into a mixed canonical matrix product state (MPS). 
