@@ -8,7 +8,7 @@ class MixedCanonical:
         self.ortho_center = ortho_center  # orthogonality center at site j
         self.j = j
 
-        self.rank = left_part.size + right_part.size + 1
+        self.rank = len(left_part) + len(right_part) + 1
 
     def is_left_canonical(self):
         return self.j == self.rank - 1
@@ -25,8 +25,7 @@ def decompose(state: np.array, j: int, truncate=False, trunc_bond_d=0) -> MixedC
     tensor_rank = int(np.log2(state.size))
 
     if tensor_rank - j < 1:
-        print("Error: Orthogonality center index is out of bounds")
-        return None
+        raise Exception("Orthogonality center index is out of bounds")
 
     # we extend shape of our tensor for easier calculations (we add two 1d legs, one on the left and one on the right)
     extension = np.ones(1)
