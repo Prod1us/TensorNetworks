@@ -6,7 +6,7 @@ Implementations of tensor networks algorithms in python.
 Basic tensor network algorithm that decomposes an n-rank tensor into a mixed canonical matrix product state (MPS). 
 In diagrammatic form, it looks like this
 
-![](pictures/mps.svg)
+![d - bond dimensions](pictures/mps.svg)
 
 This form of representing manybody states allows to perform 
 useful calculations. For example we can easily calculate expectation values 
