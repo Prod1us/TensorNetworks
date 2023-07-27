@@ -10,11 +10,11 @@ In diagrammatic form, it looks like this
 
 This form of representing manybody states allows to perform 
 useful calculations. For example we can easily calculate expectation values 
-of one-site 
+of one-site local operator
 
 ![](pictures/Ev1.svg)
 
-or two-site local operators
+or two-site 
 
 ![](pictures/Ev2.svg)
 
