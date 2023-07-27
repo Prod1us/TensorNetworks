@@ -15,12 +15,16 @@ if __name__ == "__main__":
     pauliZ = np.array([[1., 0.], [0., -1.]])
     pauliZZ = np.tensordot(pauliZ, pauliZ, axes=0)
 
-    # TODO check truncation
+    psi = random(8)
+    j = 5
+    MPS = mps.MixedCanonical(psi, j)
+    MPS_trunc = mps.MixedCanonical(psi, j, 2)
 
-    psi = random(10)
-    j = 4
     print("Expectation value of pauli Z operator in random state psi at j site: " +
-          str(mps.local_1site_expectation_value(psi, j, pauliZ)))
+          str(MPS.ev_1site(pauliZ)))
+
+    print("Expectation value of pauli Z operator in random state psi at j site (with bond dimension truncation): " +
+          str(MPS.ev_1site(pauliZ)))
 
     print("Expectation value of kronecker product of two pauli Z operators in random state psi at j and j + 1 site: " +
-          str(mps.local_2site_expectation_value(psi, j, pauliZZ)))
+          str(MPS.ev_2site(pauliZZ)))
