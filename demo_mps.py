@@ -1,6 +1,6 @@
 import mps
+import mpo
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 # function generates random spin one-half states of rank n
@@ -26,5 +26,10 @@ if __name__ == "__main__":
     print("Expectation value of pauli Z operator in random state psi at j site (with bond dimension truncation): " +
           str(MPS.ev_1site(pauliZ)))
 
-    print("Expectation value of kronecker product of two pauli Z operators in random state psi at j and j + 1 site: " +
+    print("Expectation value of kronecker product of two pauli Z operators in random state psi at j and j + 1 sites: " +
           str(MPS.ev_2site(pauliZZ)))
+
+    MPO = mpo.QTIM(8, 1, 0.1)
+
+    print("Expectation value of QTIM Hamiltonian in random state psi: " +
+          str(MPS.ev_mpo(MPO)))

@@ -1,5 +1,8 @@
 import numpy as np
 
+import decomposition
+import mpo
+
 from numpy.typing import NDArray
 complex_arr_t = NDArray[np.complex128]
 
@@ -98,6 +101,22 @@ class MixedCanonical:
         ring = ring.transpose((0, 2, 1, 3))
 
         return np.real(np.tensordot(operator, ring, axes=((0, 1, 2, 3), (0, 1, 2, 3))))
+
+    # method returns expectation value ov the operator represented as MPO in our MPS state
+    def ev_mpo(self, MPO: mpo.QTIM) -> float:
+        L, R = decomposition.mps_mpo_contraction(self, MPO)
+        return np.real(np.tensordot(L[0], R[-1], axes=((0, 1, 2), (0, 1, 2))))
+
+    def __getitem__(self, i):
+        if 0 > i >= self.rank:
+            Exception("Index out of bounds")
+
+        if i < self.j:
+            return self.left_part[i]
+        if i == self.j:
+            return self.ortho_center
+        if i > self.j:
+            return self.right_part[i - self.j - 1]
 
     # with this method we transfer our orthogonality center to a new site using gauge transformations
     def change_j(self, j: int):
