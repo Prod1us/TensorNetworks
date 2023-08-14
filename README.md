@@ -61,5 +61,5 @@ After a few sweeps it will converge, and we will obtain lowest eigenstate of our
 Main goals for now (in priority order):
 
 - [x] MPS decomposition algorithm 
-- [ ] MPO Lanczos based algorithms 
+- [x] MPO Lanczos based algorithms 
 - [ ] TDVP
