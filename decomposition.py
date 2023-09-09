@@ -1,6 +1,7 @@
 import numpy as np
 
 
+# instead of contracting mpo and mps at one time we perform consequential contraction with cost ~ (bond d)^3
 def mps_mpo_contraction(MPS, MPO):
     if MPS.rank != MPO.rank:
         Exception("uneven ranks of MPO and MPS")
