@@ -8,14 +8,44 @@ In diagrammatic form, it looks like this
 
 ![d - bond dimensions](pictures/mps.svg)
 
+```python
+import mps 
+import state_tensor
+
+n = 10 # rank of the initial tensor (number of spins)
+j = 6 # orthogonality centre cite 
+bond_d = 2 #truncated bond dimension of the MPS
+psi = state_tensor.random(n) # random state in form of a tensor
+
+MPS = mps.MixedCanonical(psi, j, bond_d)
+```
+
 This form of representing many-body states allows us to perform useful calculations.For example, we can easily calculate 
 expectation values of one-site local operator
 
 ![](pictures/Ev1.svg)
 
+```python
+pauli_Z = np.array([[1.0, 0.0], [0.0, -1.0]])
+
+MPS.ev_1site(pauli_Z) # = -0.02813418284300012 for parameters as above
+
+```
+
+
+
 or two-site 
 
 ![](pictures/Ev2.svg)
+
+
+```python
+pauli_ZZ = np.tensordot(pauli_Z, pauli_Z, axes=0)
+
+MPS.ev_2site(pauli_ZZ) # = 0.003394449492646695 for parameters as above
+```
+
+
 
 ## MPO based algorithms 
 
@@ -25,6 +55,15 @@ eigenstates of the operator. As an example, I have used the Quantum Transverse 1
 
 ![](pictures/qtim.svg)
 
+```python
+import mpo 
+
+n = 10  # rank of the MPO
+h = 0.1 
+hz = 1.0
+
+MPO = mpo.QTIM(n, h, hz)
+```
 
 ### Expectation value
 
@@ -35,6 +74,10 @@ Expectation value of the MPO in a given MPS state
 can be efficiently calculated using following scheme
 
 ![](pictures/ev_scheme.svg)
+
+```python
+MPS.ev_mpo(MPO) # = -0.7637637108962172 in the MPS state as above
+```
 
 
 ### Lowest eigenstate of the MPO Hamiltonian
@@ -55,6 +98,10 @@ previously calculated L and R tensors. After each Lanczos step, we update these 
 (similar procedure for R).
 
 After a few sweeps it will converge, and we will obtain lowest eigenstate of our MPO.
+
+```python
+energy, lowest_eigenstate = mpo.ground_system(MPO) # energy = -19.01833205830135
+```
 
 ## Roadmap
 
